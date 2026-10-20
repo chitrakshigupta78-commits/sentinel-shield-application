@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Shield - Cyber Awareness Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            dark: '#090d16',
+                            card: '#111827',
+                            border: '#1f2937',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            red: '#ef4444',
+                            purple: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #060913;
+            color: #e5e7eb;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-50 bg-[#090d16]/95 backdrop-blur-md border-b border-gray-800 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('feeds')">
+                <div class="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        Sentinel <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/30 text-cyan-400">SHIELD</span>
+                    </h1>
+                    <p class="text-[11px] text-gray-400 font-mono hidden sm:block">Simplified Cyber Defense & Intelligence</p>
+                </div>
+            </div>
+
+            <!-- Quick Navigation Tabs -->
+            <nav class="flex items-center space-x-1 sm:space-x-2">
+                <button id="tab-feeds" onclick="switchTab('feeds')" class="tab-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-medium transition flex items-center space-x-2 text-cyan-400 bg-gray-800 border border-cyan-500/30">
+                    <i class="fa-solid fa-radar"></i>
+                    <span>Redirected Threat Feeds</span>
+                </button>
+                <button id="tab-topics" onclick="switchTab('topics')" class="tab-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-medium transition flex items-center space-x-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Awareness Topics</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6 flex-grow w-full space-y-6">
+
+        <!-- ================= TAB 1: THREAT FEEDS & SUBMISSION ================= -->
+        <section id="section-feeds" class="tab-content space-y-6">
+            <!-- Quick Analyzer / Submission Card -->
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 shadow-xl space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800/80 pb-3">
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-filter-circle-xmark text-cyan-400"></i> Report & Redirect Suspicious Item
+                        </h2>
+                        <p class="text-xs text-gray-400">Paste any suspicious email content, text message, or OTP request below to test and categorize it into the live feeds.</p>
+                    </div>
+                    <span class="text-[11px] font-mono text-cyan-400 bg-cyan-950 border border-cyan-800 px-2.5 py-1 rounded-full self-start sm:self-auto">
+                        <i class="fa-solid fa-robot mr-1"></i> Auto-Classifier
+                    </span>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="text" id="reportSender" placeholder="Sender / Phone / Email (e.g. PayPal Security or +1-800-FAKE)" class="bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 font-mono">
+                        <select id="reportCategory" class="bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-gray-300 focus:outline-none focus:border-cyan-500 font-mono">
+                            <option value="auto">Auto-Detect Type</option>
+                            <option value="email">Redirect to Fake Emails Column</option>
+                            <option value="otp">Redirect to Fake OTPs/SMS Column</option>
+                        </select>
+                        <button onclick="submitThreatReport()" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center justify-center space-x-2 cursor-pointer">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Classify & Add to Feed</span>
+                        </button>
+                    </div>
+
+                    <textarea id="reportContent" rows="3" placeholder="Paste the suspicious email text or SMS message here... (e.g., 'URGENT: Your account code is 849201. Click link to verify')" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-cyan-500 font-mono resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Feed Search & Filter Bar -->
+            <div class="flex items-center justify-between gap-4">
+                <div class="relative w-full max-w-md">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                    <input type="text" id="feedSearch" oninput="filterFeeds()" placeholder="Search redirected threats by keyword, sender, or scam indicator..." class="w-full bg-gray-900 border border-gray-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 font-mono">
+                </div>
+                <div class="text-xs text-gray-400 font-mono hidden sm:block">
+                    Live Feed Columns
+                </div>
+            </div>
+
+            <!-- DEDICATED COLUMNS GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- COLUMN 1: REDIRECTED FAKE EMAILS -->
+                <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-sm">
+                                <i class="fa-solid fa-envelope-open-text"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">Redirected Fake Emails / Phishing</h3>
+                                <p class="text-[11px] text-gray-400">Captured phishing bait, spoofed headers & malicious links</p>
+                            </div>
+                        </div>
+                        <span id="emailCountBadge" class="text-xs font-mono bg-red-950 border border-red-800 text-red-400 px-2 py-0.5 rounded-full">3 Items</span>
+                    </div>
+
+                    <!-- Feed Items Container -->
+                    <div id="fakeEmailsFeed" class="space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
+                        <!-- Dynamic email items injected by JS -->
+                    </div>
+                </div>
+
+                <!-- COLUMN 2: REDIRECTED FAKE OTPS & SMS SCAMS -->
+                <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm">
+                                <i class="fa-solid fa-comment-slash"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-sm font-bold text-white">Redirected Fake OTPs & SMS Scams</h3>
+                                <p class="text-[11px] text-gray-400">Captured OTP traps, smishing links & fake bank alerts</p>
+                            </div>
+                        </div>
+                        <span id="otpCountBadge" class="text-xs font-mono bg-amber-950 border border-amber-800 text-amber-400 px-2 py-0.5 rounded-full">3 Items</span>
+                    </div>
+
+                    <!-- Feed Items Container -->
+                    <div id="fakeOtpsFeed" class="space-y-3.5 max-h-[620px] overflow-y-auto pr-1">
+                        <!-- Dynamic OTP items injected by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 2: AWARENESS TOPICS ================= -->
+        <section id="section-topics" class="tab-content hidden space-y-6">
+            <!-- Header & Search -->
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 md:p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-cyan-400"></i> Cybersecurity Awareness Topics
+                        </h2>
+                        <p class="text-xs text-gray-400">Simple explanations, real-world examples, and 1-line key rules for every threat vector.</p>
+                    </div>
+                    <div class="relative w-full sm:w-72">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+                        <input type="text" id="topicSearch" oninput="filterTopics()" placeholder="Search subtopics or keywords..." class="w-full bg-gray-950 border border-gray-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 font-mono">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accordion / Card Topics List -->
+            <div class="space-y-4" id="topicsContainer">
+                <!-- Dynamic Topics & Subtopics Injected via JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Simple Footer -->
+    <footer class="border-t border-gray-800/80 bg-[#090d16] py-4 px-4 mt-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-500 font-mono">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-shield-halved text-cyan-400"></i>
+                <span>Sentinel Shield &copy; 2026 | Clean & Simple Defense Portal</span>
+            </div>
+            <div class="flex space-x-4">
+                <span class="hover:text-cyan-400 cursor-pointer" onclick="switchTab('feeds')">Threat Feeds</span>
+                <span class="hover:text-cyan-400 cursor-pointer" onclick="switchTab('topics')">Awareness Topics</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        /* ================= INITIAL DATA SETS ================= */
+        
+        let fakeEmailsData = [
+            {
+                id: "e1",
+                sender: "Security Alert <no-reply@sec-paypaI-desk.org>",
+                subject: "URGENT: Restricted Account Notice",
+                urgency: "HIGH",
+                timestamp: "10 mins ago",
+                body: "We detected unauthorized access from Moscow. Your account will be closed in 2 hours unless you verify identity below.",
+                indicators: [
+                    "Typosquatting domain (@sec-paypaI-desk.org with capital 'I')",
+                    "Artificial 2-hour panic deadline",
+                    "Direct password verification link"
+                ]
+            },
+            {
+                id: "e2",
+                sender: "Netflix Billing <billing-update@netfIix-verify-mail.com>",
+                subject: "Payment Declined - Update Payment Method",
+                urgency: "MEDIUM",
+                timestamp: "45 mins ago",
+                body: "Your subscription auto-renew failed. Please sign in to update credit card details to keep your account active.",
+                indicators: [
+                    "Fake domain extension (netfIix-verify-mail.com)",
+                    "Generic greeting instead of member name",
+                    "Credential harvesting link"
+                ]
+            },
+            {
+                id: "e3",
+                sender: "HR Advisory <hr-notice@corporate-payroll-update.net>",
+                subject: "Updated Q3 Tax Document Attachment",
+                urgency: "HIGH",
+                timestamp: "2 hours ago",
+                body: "Please download and review your attached Q3 Tax Slip file 'Tax_Doc_Q3.xlsm' and enable macros to view.",
+                indicators: [
+                    "Macro-enabled excel file attachment (.xlsm)",
+                    "Unsolicited payroll change request",
+                    "Header IP originates from external relay"
+                ]
+            }
+        ];
+
+        let fakeOtpsData = [
+            {
+                id: "o1",
+                sender: "AD-BNKALRT (+1-800-555-0199)",
+                urgency: "HIGH",
+                timestamp: "5 mins ago",
+                preview: "Bank Alert: $1,450.00 debited for order #8812. If NOT you, call +1-800-555-0199 immediately or enter OTP 884920 to stop transaction.",
+                indicators: [
+                    "Fake urgency prompting phone call to scam desk",
+                    "Requesting OTP entry to 'cancel' a transaction",
+                    "Unverified sender ID"
+                ]
+            },
+            {
+                id: "o2",
+                sender: "VK-GOOGL-OTP",
+                urgency: "HIGH",
+                timestamp: "30 mins ago",
+                preview: "849201 is your Google verification code. Someone is trying to reset your password. Reply to this SMS with the code to lock your account.",
+                indicators: [
+                    "Prompting user to reply to SMS with confidential OTP code",
+                    "Social engineering password reset trigger",
+                    "Google never requests OTP via SMS reply"
+                ]
+            },
+            {
+                id: "o3",
+                sender: "Courier Delivery <http://track-pkg-now.info>",
+                urgency: "MEDIUM",
+                timestamp: "1 hour ago",
+                preview: "Package delivery failed due to incorrect address fee ($1.50). Verify code 4492 and update address at http://track-pkg-now.info/update",
+                indicators: [
+                    "Smishing link pointing to suspicious .info domain",
+                    "Small fee trap to harvest credit card details",
+                    "Unsolicited tracking request"
+                ]
+            }
+        ];
+
+        const awarenessTopicsData = [
+            {
+                id: "phishing-topic",
+                title: "1. Phishing & Email Scams",
+                icon: "fa-envelope-open-text",
+                color: "cyan",
+                subtopics: [
+                    {
+                        title: "Spear Phishing",
+                        explanation: "Highly targeted email scams tailored to a specific individual or employee using researched personal details to build fake trust.",
+                        example: "An email to an accountant referencing a real company project name and asking to wire funds to an vendor account.",
+                        takeaway: "Always double-check unexpected payment requests out-of-band (e.g. phone call), even if personal details are mentioned."
+                    },
+                    {
+                        title: "Domain Spoofing",
+                        explanation: "Attackers register web domains that visually mimic authentic brand names using lookalike letters (typosquatting).",
+                        example: "Using 'paypaI.com' (capital i) or 'microsoft-security-alert.net' instead of official domains.",
+                        takeaway: "Carefully inspect the exact text after the '@' symbol in sender addresses and before the TLD (.com)."
+                    },
+                    {
+                        title: "Urgency Tactics",
+                        explanation: "Psychological triggers designed to panic victims into acting fast before thinking logically or checking facts.",
+                        example: "'Your account will be permanently suspended in 1 hour unless you verify your password right now.'",
+                        takeaway: "Legitimate organizations rarely impose extreme tight deadlines via unsolicited emails."
+                    },
+                    {
+                        title: "Suspicious Attachments",
+                        explanation: "Executable scripts, zip archives, or macro-enabled document files sent via email to install malware when opened.",
+                        example: "Opening 'Invoice_PDF.exe' or enabling macros on 'Tax_Document.xlsm'.",
+                        takeaway: "Never download or open attachments from unverified senders, especially files ending in .exe, .xlsm, or .zip."
+                    }
+                ]
+            },
+            {
+                id: "otp-topic",
+                title: "2. OTP & SMS Scams (Smishing)",
+                icon: "fa-comment-slash",
+                color: "amber",
+                subtopics: [
+                    {
+                        title: "Fake Bank Verification",
+                        explanation: "Fake text messages alerting you to an unauthorized purchase and asking you to call a number or enter an OTP to cancel.",
+                        example: "'$900 charged for iPhone. If not you, click link or enter OTP 5521 to cancel.'",
+                        takeaway: "Banks will never send you an OTP to 'cancel' a transaction—OTPs are only used to APPROVE actions."
+                    },
+                    {
+                        title: "Unsolicited OTP Requests",
+                        explanation: "An attacker triggers a password reset on your real account and tricks you into giving them the verification code sent to your phone.",
+                        example: "A caller claims: 'I accidentally sent my OTP code to your number by mistake, please read it back to me.'",
+                        takeaway: "Treat OTP codes like private banking PINs; never share them with anyone under any circumstances."
+                    },
+                    {
+                        title: "SIM Swapping",
+                        explanation: "Scammers trick mobile carriers into transferring your phone number to their SIM card to hijack SMS verification codes.",
+                        example: "Your mobile phone suddenly loses signal completely while an attacker accesses your bank 2FA codes.",
+                        takeaway: "Set a PIN/password lock on your mobile carrier account and switch from SMS 2FA to Authenticator Apps."
+                    },
+                    {
+                        title: "Malicious Links in SMS",
+                        explanation: "Shortened links sent via text leading to fake mobile login portals designed to harvest passwords.",
+                        example: "'Your package delivery failed. Pay $1.20 redelivery fee at http://bit.ly/fake-track.'",
+                        takeaway: "Never tap on hyperlinked text messages from unknown phone numbers."
+                    }
+                ]
+            },
+            {
+                id: "pass-topic",
+                title: "3. Password & Account Security",
+                icon: "fa-key",
+                color: "emerald",
+                subtopics: [
+                    {
+                        title: "Password Reuse",
+                        explanation: "Using the same password across multiple websites, allowing hackers to breach all your accounts if just one site leaks data.",
+                        example: "Using 'Summer2024!' for email, Netflix, banking, and shopping sites alike.",
+                        takeaway: "Every account must have a unique password so one data breach doesn't compromise your digital identity."
+                    },
+                    {
+                        title: "Two-Factor Authentication (2FA)",
+                        explanation: "Requiring a secondary verification step (like a phone code or authenticator app) in addition to your password.",
+                        example: "Logging into your bank with a password AND an Authenticator App code.",
+                        takeaway: "Enable 2FA on all important accounts to stop attackers even if they steal your password."
+                    },
+                    {
+                        title: "Password Managers",
+                        explanation: "Encrypted digital vaults that generate and securely store complex, unique passwords for all your accounts.",
+                        example: "Using tools like Bitwarden, 1Password, or KeePass so you only need to remember one master key.",
+                        takeaway: "Let a password manager store long, complex credentials so you don't have to memorize dozens of passwords."
+                    },
+                    {
+                        title: "Passkeys",
+                        explanation: "A modern, passwordless authentication standard using your device's biometric lock (fingerprint/FaceID) instead of typing passwords.",
+                        example: "Unlocking your Google or Apple account using device FaceID.",
+                        takeaway: "Adopt Passkeys wherever supported for immune protection against traditional password phishing."
+                    }
+                ]
+            },
+            {
+                id: "social-topic",
+                title: "4. Social Engineering & Voice Phishing (Vishing)",
+                icon: "fa-user-ninja",
+                color: "purple",
+                subtopics: [
+                    {
+                        title: "Authority Impersonation",
+                        explanation: "Scammers impersonating law enforcement, tax officers, or executives to intimidate victims into compliance.",
+                        example: "A caller claiming to be from the IRS demanding immediate payment via gift cards to avoid arrest.",
+                        takeaway: "Government agencies and legitimate firms will never demand instant payment via gift cards or crypto."
+                    },
+                    {
+                        title: "Tech Support Scams",
+                        explanation: "Fake browser pop-ups or callers alleging your computer has viruses and demanding remote access to 'fix' it.",
+                        example: "A pop-up warning 'Windows System Infected' with a toll-free number to call.",
+                        takeaway: "Microsoft, Apple, and antivirus companies will never trigger phone pop-ups asking you to call them."
+                    },
+                    {
+                        title: "Emotional Manipulation",
+                        explanation: "Exploiting fear, affection, or greed to bypass rational hesitation (e.g. fake family emergencies).",
+                        example: "A text claiming: 'Mom, I lost my phone and got arrested, please wire bail money to this account.'",
+                        takeaway: "Always pause and contact the family member directly on their known phone number to verify claims."
+                    }
+                ]
+            },
+            {
+                id: "wifi-topic",
+                title: "5. Public Wi-Fi & Device Safety",
+                icon: "fa-wifi",
+                color: "blue",
+                subtopics: [
+                    {
+                        title: "Man-in-the-Middle (MitM) Attacks",
+                        explanation: "Attackers positioning themselves on unencrypted public Wi-Fi to intercept or alter data you send online.",
+                        example: "Browsing banking sites on open airport Wi-Fi while an attacker sniffs your unencrypted traffic.",
+                        takeaway: "Always use a reputable Virtual Private Network (VPN) when connecting to open public Wi-Fi networks."
+                    },
+                    {
+                        title: "Shoulder Surfing",
+                        explanation: "Direct physical observation of someone typing passwords, PINs, or sensitive information in crowded public spaces.",
+                        example: "A stranger watching your phone keypad screen over your shoulder while you log into your banking app on a bus.",
+                        takeaway: "Be mindful of your surroundings and shield your screen when entering passwords or PINs in public."
+                    },
+                    {
+                        title: "Automatic Bluetooth/Wi-Fi Connections",
+                        explanation: "Devices set to automatically connect to open networks or pair with nearby Bluetooth devices without prompting.",
+                        example: "Your phone automatically joining a malicious rogue Wi-Fi hotspot named 'Free_CoffeeShop_WiFi'.",
+                        takeaway: "Turn off 'Auto-Join Public Networks' and disable Bluetooth when not actively using it."
+                    }
+                ]
+            }
+        ];
+
+        /* ================= TAB NAVIGATION ================= */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            const target = document.getElementById(`section-${tabId}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-medium transition flex items-center space-x-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 cursor-pointer";
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-3.5 py-2 rounded-lg text-xs md:text-sm font-medium transition flex items-center space-x-2 text-cyan-400 bg-gray-800 border border-cyan-500/30 cursor-pointer";
+            }
+        }
+
+        /* ================= RENDER FEEDS LOGIC ================= */
+        function renderFeeds() {
+            const emailFeedEl = document.getElementById('fakeEmailsFeed');
+            document.getElementById('emailCountBadge').innerText = `${fakeEmailsData.length} Items`;
+            
+            if (fakeEmailsData.length === 0) {
+                emailFeedEl.innerHTML = `<div class="p-6 text-center text-xs text-gray-500 font-mono">No redirected fake emails found.</div>`;
+            } else {
+                emailFeedEl.innerHTML = fakeEmailsData.map(item => `
+                    <div class="bg-gray-950 border border-gray-800 rounded-xl p-3.5 space-y-2 hover:border-red-500/30 transition">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="text-xs font-mono font-bold text-red-400 truncate">${escapeHtml(item.sender)}</div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-300 uppercase">${item.urgency} URGENCY</span>
+                        </div>
+                        <div class="text-xs font-bold text-white">${escapeHtml(item.subject)}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed bg-gray-900/60 p-2.5 rounded-lg border border-gray-800/80 font-mono text-[11px]">${escapeHtml(item.body)}</p>
+                        
+                        <div class="pt-1 space-y-1">
+                            <div class="text-[10px] font-mono text-gray-500 uppercase tracking-wider">Detected Indicators:</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${item.indicators.map(ind => `<span class="text-[10px] font-mono bg-gray-900 border border-gray-800 text-gray-400 px-2 py-0.5 rounded"><i class="fa-solid fa-triangle-exclamation text-amber-500 text-[9px] mr-1"></i>${escapeHtml(ind)}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="text-[10px] font-mono text-gray-600 text-right pt-1">${item.timestamp}</div>
+                    </div>
+                `).join('');
+            }
+
+            const otpFeedEl = document.getElementById('fakeOtpsFeed');
+            document.getElementById('otpCountBadge').innerText = `${fakeOtpsData.length} Items`;
+
+            if (fakeOtpsData.length === 0) {
+                otpFeedEl.innerHTML = `<div class="p-6 text-center text-xs text-gray-500 font-mono">No redirected OTP/SMS traps found.</div>`;
+            } else {
+                otpFeedEl.innerHTML = fakeOtpsData.map(item => `
+                    <div class="bg-gray-950 border border-gray-800 rounded-xl p-3.5 space-y-2 hover:border-amber-500/30 transition">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="text-xs font-mono font-bold text-amber-400 truncate">${escapeHtml(item.sender)}</div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 border border-amber-800 text-amber-300 uppercase">${item.urgency} RISK</span>
+                        </div>
+                        <div class="text-xs text-gray-200 bg-gray-900/60 p-2.5 rounded-lg border border-gray-800/80 font-mono text-[11px] leading-relaxed">
+                            <i class="fa-solid fa-quote-left text-gray-600 mr-1"></i>${escapeHtml(item.preview)}
+                        </div>
+                        
+                        <div class="pt-1 space-y-1">
+                            <div class="text-[10px] font-mono text-gray-500 uppercase tracking-wider">Scam Indicators:</div>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${item.indicators.map(ind => `<span class="text-[10px] font-mono bg-gray-900 border border-gray-800 text-gray-400 px-2 py-0.5 rounded"><i class="fa-solid fa-bug text-red-400 text-[9px] mr-1"></i>${escapeHtml(ind)}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="text-[10px] font-mono text-gray-600 text-right pt-1">${item.timestamp}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        /* ================= SUBMIT REPORT / ANALYZER ================= */
+        function submitThreatReport() {
+            const sender = document.getElementById('reportSender').value.trim() || "Unknown Suspicious Source";
+            const categorySelect = document.getElementById('reportCategory').value;
+            const content = document.getElementById('reportContent').value.trim();
+
+            if (!content) {
+                alert("Please paste the suspicious text or email content to report!");
+                return;
+            }
+
+            const isOtp = categorySelect === 'otp' || (categorySelect === 'auto' && (
+                content.toLowerCase().includes('otp') || 
+                content.toLowerCase().includes('code') || 
+                content.toLowerCase().includes('sms') || 
+                /\b\d{4,6}\b/.test(content)
+            ));
+
+            if (isOtp) {
+                fakeOtpsData.unshift({
+                    id: "o-" + Date.now(),
+                    sender: sender,
+                    urgency: "HIGH",
+                    timestamp: "Just now",
+                    preview: content,
+                    indicators: [
+                        "User reported suspicious verification request",
+                        "Contains potential unverified link/code trap",
+                        "Manual submission filter"
+                    ]
+                });
+            } else {
+                fakeEmailsData.unshift({
+                    id: "e-" + Date.now(),
+                    sender: sender,
+                    subject: "Reported Suspicious Email Item",
+                    urgency: "HIGH",
+                    timestamp: "Just now",
+                    body: content,
+                    indicators: [
+                        "User submitted suspicious email payload",
+                        "Unverified sender domain",
+                        "Potential phishing indicator"
+                    ]
+                });
+            }
+
+            document.getElementById('reportSender').value = "";
+            document.getElementById('reportContent').value = "";
+            renderFeeds();
+        }
+
+        /* ================= FILTER FEEDS SEARCH ================= */
+        function filterFeeds() {
+            const query = document.getElementById('feedSearch').value.toLowerCase();
+            
+            const emailItems = document.querySelectorAll('#fakeEmailsFeed > div');
+            emailItems.forEach(el => {
+                const txt = el.innerText.toLowerCase();
+                el.style.display = txt.includes(query) ? 'block' : 'none';
+            });
+
+            const otpItems = document.querySelectorAll('#fakeOtpsFeed > div');
+            otpItems.forEach(el => {
+                const txt = el.innerText.toLowerCase();
+                el.style.display = txt.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        /* ================= RENDER AWARENESS TOPICS ================= */
+        function renderTopics() {
+            const container = document.getElementById('topicsContainer');
+            container.innerHTML = awarenessTopicsData.map(topic => `
+                <div class="topic-card bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden" id="${topic.id}">
+                    <div class="p-4 sm:p-5 border-b border-gray-800 flex items-center justify-between cursor-pointer bg-gray-900/90" onclick="toggleTopicAccordion('${topic.id}')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-${topic.color}-400 text-lg">
+                                <i class="fa-solid ${topic.icon}"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white">${topic.title}</h3>
+                                <p class="text-xs text-gray-400 font-mono">${topic.subtopics.length} Essential Subtopics</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-gray-500 text-sm transition-transform duration-200" id="arrow-${topic.id}"></i>
+                    </div>
+
+                    <div class="p-4 sm:p-6 space-y-4 bg-gray-950/50" id="body-${topic.id}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${topic.subtopics.map(sub => `
+                                <div class="subtopic-item bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3 flex flex-col justify-between">
+                                    <div class="space-y-2">
+                                        <div class="text-xs font-bold text-${topic.color}-400 font-mono uppercase tracking-wider flex items-center gap-1.5">
+                                            <i class="fa-solid fa-circle-dot text-[8px]"></i>
+                                            <span>${escapeHtml(sub.title)}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-300 leading-relaxed">${escapeHtml(sub.explanation)}</p>
+                                        <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800/80 text-[11px] text-gray-400">
+                                            <strong class="text-gray-200 block mb-0.5">Real-world Example:</strong>
+                                            <em>"${escapeHtml(sub.example)}"</em>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="pt-2 border-t border-gray-800/80">
+                                        <div class="text-[11px] font-mono text-emerald-400 flex items-start gap-1.5">
+                                            <i class="fa-solid fa-shield-check mt-0.5 text-xs"></i>
+                                            <span><strong>Golden Rule:</strong> ${escapeHtml(sub.takeaway)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleTopicAccordion(topicId) {
+            const body = document.getElementById(`body-${topicId}`);
+            const arrow = document.getElementById(`arrow-${topicId}`);
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            } else {
+                body.classList.add('hidden');
+                arrow.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function filterTopics() {
+            const query = document.getElementById('topicSearch').value.toLowerCase();
+            const cards = document.querySelectorAll('.topic-card');
+
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'block';
+                    const body = card.querySelector('[id^="body-"]');
+                    if (body && query.length > 0) body.classList.remove('hidden');
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        window.onload = function() {
+            renderFeeds();
+            renderTopics();
+        };
+    </script>
+</body>
+</html>
